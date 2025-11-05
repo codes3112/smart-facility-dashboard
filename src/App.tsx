@@ -1,22 +1,24 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import Sidebar from "@/components/Sidebar";
+import Header from "@/components/Header";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const toggleTheme = () => {
+    setDarkMode(!darkMode);
+    document.documentElement.classList.toggle("dark", !darkMode);
+  };
 
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-           <div className="text-xl p-6 text-red-600">Hello Tailwind</div>;
+    <div className="flex h-screen bg-white dark:bg-slate-900">
+      <Sidebar isOpen={sidebarOpen} onToggle={toggleSidebar} />
+      <div className="flex-1 flex flex-col">
+        <Header toggleSidebar={toggleSidebar} toggleTheme={toggleTheme} />
+        <main className="flex-1 p-6">Main content here</main>
       </div>
-    </>
-  )
+    </div>
+  );
 }
-
-export default App
