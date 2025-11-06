@@ -26,8 +26,8 @@ export default function Header({ toggleSidebar, toggleTheme }: HeaderProps) {
                 </Button>
             )}
             {/* Center: Title or Breadcrumb */}
-            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                Dashboard
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                Smart Facilty
             </h1>
             {/* Right: Actions */}
             <div className="flex items-center gap-4">

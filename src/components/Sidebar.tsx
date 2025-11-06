@@ -35,17 +35,17 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-64 bg-slate-100 dark:bg-slate-900 p-5 z-50
+          fixed top-0 left-0 h-full w-64 bg-gray-100 dark:bg-slate-900 p-5 z-50
           transform transition-transform duration-300
           md:translate-x-0
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         {/* Close button for mobile */}
-        <div className="flex justify-between items-center mb-6 md:hidden">
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-            Facility Dashboard
-          </h2>
+        <div className="flex justify-between items-center my-8 md:hidden">
+          <h3 className="font-bold text-gray-800 dark:text-gray-100">
+           Menu
+          </h3>
           <button
             className="p-2 rounded bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
             onClick={onToggle}
@@ -54,13 +54,13 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           </button>
         </div>
         {/* Logo / Title for desktop */}
-        <h2 className="hidden md:block text-2xl font-bold mb-6 text-slate-800 dark:text-slate-100">
-          Facility Dashboard
-        </h2>
+        <h3 className="hidden md:block font-bold my-8 text-slate-800 dark:text-slate-100">
+          Menu
+        </h3>
         {/* Nav links */}
         <nav className="flex-1 flex flex-col gap-2">
           {navItems.map((item) => (
-            <Link key={item.name} to={item.path} onClick={onToggle}>
+            <Link key={item.name} to={item.path} onClick={() => { if (window.innerWidth < 768) onToggle(); }}>
               <Button
                 variant={location.pathname === item.path ? "default" : "outline"}
                 className="w-full justify-start"
