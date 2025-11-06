@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Lobby",
+    "type": "Common Area",
+    "status": "active",
+    "devices": 5
+  },
+  {
+    "id": 2,
+    "name": "Conference Room",
+    "type": "Meeting Room",
+    "status": "inactive",
+    "devices": 8
+  },
+  {
+    "id": 3,
+    "name": "Office 1",
+    "type": "Office",
+    "status": "active",
+    "devices": 3
+  },
+  {
+    "id": 4,
+    "name": "Server Room",
+    "type": "Technical",
+    "status": "active",
+    "devices": 12
+  }
+]

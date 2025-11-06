@@ -3,6 +3,7 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
+import Zones from "./pages/Zones";
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -23,6 +24,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/zones" element={<Zones />} />
             </Routes>
           </main>
         </div>
