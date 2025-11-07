@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Dashboard from "@/pages/Dashboard";
 import Zones from "@/pages/Zones";
 import Login from "@/pages/Login";
+import Reports from "@/pages/Reports";
 import PrivateRoute from "@/routes/PrivateRoute";
 
 export default function App() {
@@ -43,6 +44,14 @@ export default function App() {
               element={
                 <PrivateRoute>
                   <Zones />
+                </PrivateRoute>
+              }
+            />
+             <Route
+              path="/reports"
+              element={
+                <PrivateRoute>
+                  <Reports />
                 </PrivateRoute>
               }
             />
