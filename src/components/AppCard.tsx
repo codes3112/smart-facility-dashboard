@@ -15,7 +15,7 @@ export default function AppCard({ title, value, subtitle, header, actions, child
   if (children) {
     return (
       <Card>
-        <CardHeader className="flex flex-row justify-between items-center">
+        <CardHeader className={`flex flex-row items-center ${actions ? 'justify-between' : 'justify-center'}`}>
           <CardTitle>{header || title}</CardTitle>
           {actions && <div>{actions}</div>}
         </CardHeader>

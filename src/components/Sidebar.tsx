@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {useAuth} from './../context/AuthContext'
 
 interface SidebarProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ const navItems = [
 
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const location = useLocation();
+  const { user } = useAuth();
+
   return (
     <>
       {/* Hamburger button fixed at top-left for mobile */}
@@ -44,7 +47,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {/* Close button for mobile */}
         <div className="flex justify-between items-center my-8 md:hidden">
           <h3 className="font-bold text-gray-800 dark:text-gray-100">
-           Menu
+            {`Hi ${user?.email}!` || 'Hello Admin!'}
           </h3>
           <button
             className="p-2 rounded bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
@@ -55,7 +58,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         </div>
         {/* Logo / Title for desktop */}
         <h3 className="hidden md:block font-bold my-8 text-slate-800 dark:text-slate-100">
-          Menu
+        {`Hi ${user?.email}!` || 'Hello Admin!'}
         </h3>
         {/* Nav links */}
         <nav className="flex-1 flex flex-col gap-2">
