@@ -1,34 +1,36 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-interface User {
-  email: string;
-}
+import { login as apiLogin, logout as apiLogout, getCurrentUser, User } from "@/api/auth";
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem("user");
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
+  // On mount, check if user is logged in
+  useEffect(() => {
+    async function fetchUser() {
+      const current = await getCurrentUser();
+      if (current) setUser(current);
+    }
+    fetchUser();
+  }, []);
   const login = async (email: string, password: string) => {
-    if (email === "admin@example.com" && password === "password") {
-      const loggedUser = { email };
+    try {
+      const loggedUser = await apiLogin(email, password);
       setUser(loggedUser);
-      localStorage.setItem("user", JSON.stringify(loggedUser));
-      navigate("/dashboard", { replace: true });
-    } else {
-      alert("Invalid credentials");
+      navigate("/dashboard");
+    } catch (err: any) {
+      alert(err.message || "Login failed");
     }
   };
-  const logout = () => {
+  const logout = async () => {
+    await apiLogout();
     setUser(null);
-    localStorage.removeItem("user");
-    navigate("/login", { replace: true });
+    navigate("/login");
   };
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

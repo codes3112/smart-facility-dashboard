@@ -7,6 +7,8 @@ import Zones from "@/pages/Zones";
 import Login from "@/pages/Login";
 import Reports from "@/pages/Reports";
 import PrivateRoute from "@/routes/PrivateRoute";
+import { useLoader } from "./hooks/useLoader";
+import AppLoader from "./components/AppLoader";
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,6 +19,7 @@ export default function App() {
     setDarkMode(!darkMode);
     document.documentElement.classList.toggle("dark", !darkMode);
   };
+  const {loading} = useLoader();
   // Show Sidebar + Header ONLY if not on /login
   const showLayout = location.pathname !== "/login";
   return (
@@ -27,6 +30,7 @@ export default function App() {
           <Header toggleSidebar={toggleSidebar} toggleTheme={toggleTheme} />
         )}
         <main className="flex-1 overflow-y-auto">
+          <AppLoader loading ={loading}/>
           <Routes>
             {/* Public Route */}
             <Route path="/login" element={<Login />} />

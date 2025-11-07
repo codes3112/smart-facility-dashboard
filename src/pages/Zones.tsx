@@ -2,54 +2,55 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import AppTable from "@/components/AppTable";
 import AppChart from "@/components/AppChart";
-import zonesData from "@/data/zones.json";
 import AppCard from "@/components/AppCard";
 import AppDialog from "@/components/AppDialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
-interface Zone {
-  id: number;
-  name: string;
-  type: string;
-  status: "active" | "inactive";
-  devices: number;
-}
+import { Zone, fetchZones, addZone, updateZone, deleteZone } from "@/api/zones";
+import { useLoader } from "@/hooks/useLoader";
+
 export default function Zones() {
   const [zones, setZones] = useState<Zone[]>([]);
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
-  // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingZone, setEditingZone] = useState<Zone | null>(null);
-  // Form state
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
   const [devices, setDevices] = useState(0);
+  const {showLoader, hideLoader} = useLoader();
+
   useEffect(() => {
-    setZones(zonesData as Zone[]);
+    async function loadZones() {
+      showLoader();
+      const data = await fetchZones();
+      setZones(data);
+      hideLoader();
+    }
+    loadZones();
   }, []);
-  const toggleStatus = (id: number) => {
-    setZones((prev) =>
-      prev.map((z) => (z.id === id ? { ...z, status: z.status === "active" ? "inactive" : "active" } : z))
-    );
+  const toggleStatus = async (id: number) => {
+    const zone = zones.find(z => z.id === id);
+    if (!zone) return;
+    const updated = { status: zone.status === "active" ? "inactive" : "active" };
+    const result = await updateZone(id, updated);
+    if (result) {
+      setZones(prev => prev.map(z => z.id === id ? result : z));
+    }
   };
   const filteredZones =
-    filterStatus === "all" ? zones : zones.filter((z) => z.status === filterStatus);
-  // Chart data
-  const energyData = filteredZones.map((z) => ({
+    filterStatus === "all" ? zones : zones.filter(z => z.status === filterStatus);
+  const energyData = filteredZones.map(z => ({
     zone: z.name,
     energy: z.devices * 2,
   }));
-  // Table columns
   const columns = [
     { title: "Name", render: (row: Zone) => row.name },
     { title: "Type", render: (row: Zone) => row.type },
     {
       title: "Status",
       render: (row: Zone) => (
-        <span
-          className={`px-2 py-1 rounded text-white ${row.status === "active" ? "bg-green-500" : "bg-red-500"}`}
-        >
+        <span className={`px-2 py-1 rounded text-white ${row.status === "active" ? "bg-green-500" : "bg-red-500"}`}>
           {row.status}
         </span>
       ),
@@ -59,20 +60,13 @@ export default function Zones() {
       title: "Actions",
       render: (row: Zone) => (
         <div className="flex gap-2">
-          <Button size="sm" onClick={() => toggleStatus(row.id)}>
-            Toggle
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => openEditDialog(row)}>
-            Edit
-          </Button>
-          <Button size="sm" variant="destructive" onClick={() => handleDelete(row.id)}>
-            Delete
-          </Button>
+          <Button size="sm" onClick={() => toggleStatus(row.id)}>Toggle</Button>
+          <Button size="sm" variant="outline" onClick={() => openEditDialog(row)}>Edit</Button>
+          <Button size="sm" variant="destructive" onClick={() => handleDelete(row.id)}>Delete</Button>
         </div>
       ),
     },
   ];
-  // Open Add Dialog
   const openAddDialog = () => {
     setEditingZone(null);
     setName("");
@@ -81,7 +75,6 @@ export default function Zones() {
     setDevices(0);
     setDialogOpen(true);
   };
-  // Open Edit Dialog
   const openEditDialog = (zone: Zone) => {
     setEditingZone(zone);
     setName(zone.name);
@@ -90,21 +83,17 @@ export default function Zones() {
     setDevices(zone.devices);
     setDialogOpen(true);
   };
-  const handleDelete = (id: number) => {
-    setZones((prev) => prev.filter((z) => z.id !== id));
+  const handleDelete = async (id: number) => {
+    const success = await deleteZone(id);
+    if (success) setZones(prev => prev.filter(z => z.id !== id));
   };
-  const handleSubmit = () => {
-    const newZone: Zone = {
-      id: editingZone ? editingZone.id : Date.now(),
-      name,
-      type,
-      status,
-      devices,
-    };
+  const handleSubmit = async () => {
     if (editingZone) {
-      setZones((prev) => prev.map((z) => (z.id === editingZone.id ? newZone : z)));
+      const updated = await updateZone(editingZone.id, { name, type, status, devices });
+      if (updated) setZones(prev => prev.map(z => z.id === updated.id ? updated : z));
     } else {
-      setZones((prev) => [...prev, newZone]);
+      const newZone = await addZone({ name, type, status, devices });
+      setZones(prev => [...prev, newZone]);
     }
     setDialogOpen(false);
   };
@@ -133,7 +122,6 @@ export default function Zones() {
           dataKeys={[{ key: "energy", color: "#f59e0b", name: "Energy (kWh)" }]}
         />
       </div>
-      {/* Add/Edit Zone Dialog */}
       <AppDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
@@ -144,20 +132,13 @@ export default function Zones() {
           <Input placeholder="Zone Name" value={name} onChange={(e) => setName(e.target.value)} />
           <Input placeholder="Type" value={type} onChange={(e) => setType(e.target.value)} />
           <Select value={status} onValueChange={(val) => setStatus(val as "active" | "inactive")}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
-          <Input
-            type="number"
-            placeholder="Devices"
-            value={devices}
-            onChange={(e) => setDevices(Number(e.target.value))}
-          />
+          <Input type="number" placeholder="Devices" value={devices} onChange={(e) => setDevices(Number(e.target.value))} />
         </div>
       </AppDialog>
     </div>
