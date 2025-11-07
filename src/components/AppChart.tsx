@@ -56,7 +56,7 @@ export default function AppChart({ title, type, data, dataKeys, xDataKey }: AppC
                 }}
               />
               {dataKeys.map(({ key, color, name }) => (
-                <Bar key={key} dataKey={key} fill={color} name={name || key} radius={[4, 4, 0, 0]} />
+                <Bar key={key} dataKey={key} fill={color} name={name || key} radius={[4, 4, 0, 0]} barSize={50}/>
               ))}
             </BarChart>
           )}

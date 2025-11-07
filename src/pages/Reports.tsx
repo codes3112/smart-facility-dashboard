@@ -10,13 +10,13 @@ export default function Reports() {
   const [reports, setReports] = useState<Report[]>([]);
   const [zoneFilter, setZoneFilter] = useState<string>("all");
 
- useEffect(() => {
-  async function loadReports() {
-    const data: Report[] = await getReports(zoneFilter);
-    setReports(data);
-  }
-  loadReports();
-}, [zoneFilter]);
+  useEffect(() => {
+    async function loadReports() {
+      const data: Report[] = await getReports(zoneFilter);
+      setReports(data);
+    }
+    loadReports();
+  }, [zoneFilter]);
 
 
   const filteredReports =
@@ -37,25 +37,50 @@ export default function Reports() {
     },
   ];
 
-  //Chart data — group by zone for aggregated metrics
-  const energyChartData = Object.values(
-    reports.reduce((acc: any, curr) => {
-      if (!acc[curr.zone]) acc[curr.zone] = { zone: curr.zone, energy: 0 };
-      acc[curr.zone].energy += curr.energyUsage;
-      return acc;
-    }, {})
-  );
-  const tempChartData = Object.values(
-    reports.reduce((acc: any, curr) => {
-      if (!acc[curr.zone]) acc[curr.zone] = { zone: curr.zone, temperature: 0, count: 0 };
-      acc[curr.zone].temperature += curr.temperature;
-      acc[curr.zone].count += 1;
-      return acc;
-    }, {})
-  ).map((z: any) => ({
-    zone: z.zone,
-    temperature: z.temperature / z.count,
-  }));
+  const fmtTime = (iso: string) =>
+    new Date(iso).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+
+  // Energy chart (aggregated by zone or time-series if single zone)
+  const energyChartData = (() => {
+    if (zoneFilter === "all") {
+      // aggregate energy by zone (same as before)
+      return Object.values(
+        reports.reduce((acc: any, curr) => {
+          if (!acc[curr.zone]) acc[curr.zone] = { zone: curr.zone, energy: 0 };
+          acc[curr.zone].energy += curr.energyUsage;
+          return acc;
+        }, {})
+      );
+    } else {
+      // for single zone, show energy over time
+      return reports
+        .filter((r) => r.zone === zoneFilter)
+        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+        .map((r) => ({ time: fmtTime(r.timestamp), energy: r.energyUsage }));
+    }
+  })();
+
+  // Temperature chart:
+  // - for "all": average temperature per zone
+  // - for single zone: temperature time-series
+  const tempChartData = (() => {
+    if (zoneFilter === "all") {
+      const grouped = Object.values(
+        reports.reduce((acc: any, curr) => {
+          if (!acc[curr.zone]) acc[curr.zone] = { zone: curr.zone, temperature: 0, count: 0 };
+          acc[curr.zone].temperature += curr.temperature;
+          acc[curr.zone].count += 1;
+          return acc;
+        }, {})
+      ).map((z: any) => ({ zone: z.zone, temperature: z.temperature / z.count }));
+      return grouped;
+    } else {
+      return reports
+        .filter((r) => r.zone === zoneFilter)
+        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+        .map((r) => ({ time: fmtTime(r.timestamp), temperature: r.temperature }));
+    }
+  })();
   const uniqueZones = Array.from(new Set(reports.map((r) => r.zone)));
   return (
     <div className="p-6 space-y-6">
@@ -88,27 +113,22 @@ export default function Reports() {
       </AppCard>
       {/* Charts */}
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+        {/* Energy chart */}
         <AppChart
-          title="Energy Usage by Zone"
-          type="bar"
+          title={zoneFilter === "all" ? "Energy Usage by Zone" : `Energy Over Time — ${zoneFilter}`}
+          type={zoneFilter === "all" ? "bar" : "line"}
           data={energyChartData}
-          xDataKey="zone"
-          dataKeys={[
-            { key: "energy", color: "#3b82f6", name: "Energy (kWh)" },
-          ]}
+          xDataKey={zoneFilter === "all" ? "zone" : "time"}
+          dataKeys={[{ key: zoneFilter === "all" ? "energy" : "energy", color: "#3b82f6", name: "Energy (kWh)" }]}
         />
+
+        {/* Temperature chart */}
         <AppChart
-          title="Average Temperature by Zone"
+          title={zoneFilter === "all" ? "Average Temperature by Zone" : `Temperature Over Time — ${zoneFilter}`}
           type="line"
           data={tempChartData}
-          xDataKey="zone"
-          dataKeys={[
-            {
-              key: "temperature",
-              color: "#f59e0b",
-              name: "Temperature (°C)",
-            },
-          ]}
+          xDataKey={zoneFilter === "all" ? "zone" : "time"}
+          dataKeys={[{ key: zoneFilter === "all" ? "temperature" : "temperature", color: "#f59e0b", name: "Temperature (°C)" }]}
         />
       </div>
     </div>
