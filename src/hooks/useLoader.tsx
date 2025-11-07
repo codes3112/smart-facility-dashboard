@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
-import AppLoader from "@/components/AppLoader";
 
 interface LoaderContextType {
+  loading: boolean;
   showLoader: () => void;
   hideLoader: () => void;
 }
@@ -15,9 +15,8 @@ export function LoaderProvider({ children }: { children: React.ReactNode }) {
   const hideLoader = () => setLoading(false);
 
   return (
-    <LoaderContext.Provider value={{ showLoader, hideLoader }}>
+    <LoaderContext.Provider value={{ loading, showLoader, hideLoader }}>
       {children}
-      <AppLoader loading={loading} />
     </LoaderContext.Provider>
   );
 }

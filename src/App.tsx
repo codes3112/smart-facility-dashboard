@@ -9,6 +9,7 @@ import Reports from "@/pages/Reports";
 import PrivateRoute from "@/routes/PrivateRoute";
 import { useLoader } from "./hooks/useLoader";
 import AppLoader from "./components/AppLoader";
+import { Toaster } from "./components/ui/toaster";
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -62,6 +63,7 @@ export default function App() {
             {/* Default redirect */}
             <Route path="/" element={<Navigate to="/dashboard" />} />
           </Routes>
+          <Toaster/>
         </main>
       </div>
     </div>

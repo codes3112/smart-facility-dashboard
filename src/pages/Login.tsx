@@ -3,15 +3,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AppCard from "@/components/AppCard";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 export default function Login() {
-    const {login} = useAuth()
+    const { login } = useAuth()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const { toast } = useToast();
+    const navigate = useNavigate();
 
-   const handleSubmit = async (e:FormEvent) =>{
-    e.preventDefault();
-    await login(email, password)
-   }
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        const result = await login(email, password)
+        if (result.success) {
+            toast({ title: "Login successful", description: "Welcome back!" })
+            navigate("/dashboard");
+        } else {
+            toast({ title: "Login failed", description: result.error || "Invalid credentials", variant: "destructive" })
+        }
+    }
     return (
         <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900 p-4">
             <div className="w-full max-w-md">

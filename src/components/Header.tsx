@@ -8,12 +8,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 interface HeaderProps {
   toggleSidebar?: () => void; // optional for mobile hamburger
   toggleTheme: () => void; // dark/light mode toggle
 }
 export default function Header({ toggleSidebar, toggleTheme }: HeaderProps) {
   const { logout, user } = useAuth();
+  const {toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+  try {
+    await logout();
+    toast({ title: "Logged out", description: "See you soon!" });
+    navigate("/login"); // redirect after logout
+  } catch (err: any) {
+    toast({ title: "Error", description: err.message, variant: "destructive" });
+  }
+};
   return (
     <header className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
       {/* Left: Hamburger (mobile only) */}
@@ -48,7 +62,7 @@ export default function Header({ toggleSidebar, toggleTheme }: HeaderProps) {
             <DropdownMenuItem>{user?.email}</DropdownMenuItem>
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem onClick={logout}>
+            <DropdownMenuItem onClick={handleLogout}>
               Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
