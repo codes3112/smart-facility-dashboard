@@ -10,16 +10,14 @@ import PrivateRoute from "@/routes/PrivateRoute";
 import { useLoader } from "./hooks/useLoader";
 import AppLoader from "./components/AppLoader";
 import { Toaster } from "./components/ui/toaster";
+import Settings from "./pages/Settings";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const location = useLocation();
+  const { toggleTheme } = useTheme();
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-  const toggleTheme = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle("dark", !darkMode);
-  };
   const {loading} = useLoader();
   // Show Sidebar + Header ONLY if not on /login
   const showLayout = location.pathname !== "/login";
@@ -57,6 +55,14 @@ export default function App() {
               element={
                 <PrivateRoute>
                   <Reports />
+                </PrivateRoute>
+              }
+            />
+               <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <Settings />
                 </PrivateRoute>
               }
             />
