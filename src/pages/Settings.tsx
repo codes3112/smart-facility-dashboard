@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/context/ThemeContext';
 import AppCard from '@/components/AppCard';
+import { useEffect } from 'react';
 export default function SettingsPage() {
     const { theme, setTheme } = useTheme();
     // ---- SETTINGS STATE ----
@@ -25,6 +26,11 @@ export default function SettingsPage() {
         fontSize: 'Medium',
         layout: 'Cards',
     });
+
+    // Sync appearance.darkMode with theme context
+    useEffect(() => {
+        setAppearance((prev) => ({ ...prev, darkMode: theme === 'dark' }));
+    }, [theme]);
     const [notifications, setNotifications] = React.useState({
         email: true,
         push: false,

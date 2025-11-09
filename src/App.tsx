@@ -11,12 +11,10 @@ import { useLoader } from "./hooks/useLoader";
 import AppLoader from "./components/AppLoader";
 import { Toaster } from "./components/ui/toaster";
 import Settings from "./pages/Settings";
-import { useTheme } from "@/context/ThemeContext";
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
-  const { toggleTheme } = useTheme();
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const {loading} = useLoader();
   // Show Sidebar + Header ONLY if not on /login
@@ -26,7 +24,7 @@ export default function App() {
       {showLayout && <Sidebar isOpen={sidebarOpen} onToggle={toggleSidebar} />}
       <div className={`flex-1 flex flex-col ${showLayout ? "md:ml-64" : ""}`}>
         {showLayout && (
-          <Header toggleSidebar={toggleSidebar} toggleTheme={toggleTheme} />
+          <Header toggleSidebar={toggleSidebar} />
         )}
         <main className="flex-1 overflow-y-auto">
           <AppLoader loading ={loading}/>

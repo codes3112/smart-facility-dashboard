@@ -8,14 +8,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 interface HeaderProps {
   toggleSidebar?: () => void; // optional for mobile hamburger
-  toggleTheme: () => void; // dark/light mode toggle
 }
-export default function Header({ toggleSidebar, toggleTheme }: HeaderProps) {
+export default function Header({ toggleSidebar }: HeaderProps) {
   const { logout, user } = useAuth();
+  const { toggleTheme } = useTheme();
   const {toast } = useToast();
   const navigate = useNavigate();
 

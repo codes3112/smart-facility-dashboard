@@ -10,6 +10,7 @@ import {
 } from "@/services/reportService";
 import { Report } from "@/api/reports";
 import { useLoader } from "@/hooks/useLoader";
+import { AiAdvisor } from "@/components/ai/AiAdvisor";
 export default function Reports() {
   const [reports, setReports] = useState<Report[]>([]);
   const [zoneFilter, setZoneFilter] = useState<string>("all");
@@ -114,6 +115,7 @@ export default function Reports() {
           ]}
         />
       </div>
+      <AiAdvisor/>
     </div>
   );
 }
