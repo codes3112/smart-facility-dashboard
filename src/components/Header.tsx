@@ -56,13 +56,18 @@ export default function Header({ toggleSidebar }: HeaderProps) {
           <DropdownMenuTrigger asChild>
             <Avatar className="w-10 h-10 cursor-pointer">
               <AvatarImage src="https://i.pravatar.cc/150?img=32" />
-              <AvatarFallback>{user?.email ? user.email[0].toUpperCase():'SA'}</AvatarFallback>
+              <AvatarFallback>
+                {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'SA'}
+              </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>{user?.email}</DropdownMenuItem>
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuItem disabled className="flex flex-col items-start">
+              <span className="font-semibold">{user?.name || 'Guest'}</span>
+              <span className="text-xs text-gray-500">{user?.email || 'Not logged in'}</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/settings")}>Profile</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/settings")}>Settings</DropdownMenuItem>
             <DropdownMenuItem onClick={handleLogout}>
               Logout
             </DropdownMenuItem>

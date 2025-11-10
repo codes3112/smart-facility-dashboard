@@ -46,9 +46,14 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       >
         {/* Close button for mobile */}
         <div className="flex justify-between items-center my-8 md:hidden">
-          <h3 className="font-bold text-gray-800 dark:text-gray-100">
-            {`Hi ${user?.email}!` || 'Hello Admin!'}
-          </h3>
+          <div>
+            <h3 className="font-bold text-gray-800 dark:text-gray-100">
+              {user?.name || 'Guest'}
+            </h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400">
+              {user?.email || 'Not logged in'}
+            </p>
+          </div>
           <button
             className="p-2 rounded bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
             onClick={onToggle}
@@ -57,9 +62,14 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           </button>
         </div>
         {/* Logo / Title for desktop */}
-        <h3 className="hidden md:block font-bold my-8 text-slate-800 dark:text-slate-100">
-        {`Hi ${user?.email}!` || 'Hello Admin!'}
-        </h3>
+        <div className="hidden md:block my-8">
+          <h3 className="font-bold text-slate-800 dark:text-slate-100">
+            {user?.name || 'Guest'}
+          </h3>
+          <p className="text-xs text-slate-600 dark:text-slate-400">
+            {user?.email || 'Not logged in'}
+          </p>
+        </div>
         {/* Nav links */}
         <nav className="flex-1 flex flex-col gap-2">
           {navItems.map((item) => (

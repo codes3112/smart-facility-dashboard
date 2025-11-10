@@ -1,11 +1,15 @@
 import { Navigate } from "react-router-dom";
-import { JSX } from "react";
+import { JSX, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 
-interface PrivateRouteProps {
-  children: JSX.Element;
-}
+export default function PrivateRoute({ children }: { children: JSX.Element }) {
+  const { user, loading, fetchUser } = useAuth();
 
-export default function PrivateRoute({ children }: PrivateRouteProps) {
-  const isAuthenticated = !!localStorage.getItem("authToken");
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  useEffect(() => {
+    if (!user) fetchUser(); // lazy fetch if user not loaded
+  }, [user]);
+
+  if (loading) return null; // or show global loader
+
+  return user ? children : <Navigate to="/login" replace />;
 }
