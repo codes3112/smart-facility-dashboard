@@ -16,7 +16,7 @@ export function useAiInsights() {
         body: JSON.stringify({ prompt }),
       });
 
-      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      if (!res.ok) throw new Error(`Something went wrong. Please check your API key. Server returned ${res.status}`);
 
       const data = await res.json();
       setInsight({ prompt, response: data.response, mode: data.mode });

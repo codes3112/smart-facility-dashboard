@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AppCard from "@/components/AppCard";
@@ -6,12 +6,19 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 export default function Login() {
-    const { login, loading } = useAuth()
+    const { user, login, loading } = useAuth()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({ email: "", password: "" });
     const { toast } = useToast();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user) {
+            navigate("/dashboard", { replace: true });
+        }
+    }, [user]);
+
 
     const validateForm = () => {
         const newErrors = { email: "", password: "" };
@@ -48,7 +55,7 @@ export default function Login() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        
+
         if (!validateForm()) {
             toast({
                 title: "Validation Error",

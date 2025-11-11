@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import axios from "axios";
 import { useLoader } from "@/hooks/useLoader";
 export interface User {
@@ -13,44 +13,30 @@ interface AuthContextType {
   fetchUser: () => Promise<void>;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { showLoader, hideLoader } = useLoader();
-  // On mount, check sessionStorage for token
-  useEffect(() => {
-    const savedToken = sessionStorage.getItem("authToken");
-    if (savedToken) {
-      setToken(savedToken);
-      fetchUser(savedToken);
-    } else {
-      setLoading(false); // no token, user is guest
-    }
-  }, []);
-  const fetchUser = async (tokenToUse?: string) => {
-    if (!tokenToUse && !token) {
-      setUser(null);
-      return;
-    }
+  const fetchUser = async () => {
     try {
       setLoading(true);
       const { data } = await axios.get("/api/user", { withCredentials: true });
       setUser(data.user);
-    } catch (err: any) {
-      setUser(null); // silently handle 401
+    } catch (err) {
+      setUser(null);
     } finally {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    fetchUser(); // check session on mount
+  }, []);
   const login = async (email: string, password: string) => {
     try {
       showLoader();
       setLoading(true);
-      const { data } = await axios.post("/api/login", { email, password }, { withCredentials: true });
-      setUser(data.user);
-      setToken(data.token);
-      sessionStorage.setItem("authToken", data.token); // persist token for session
+      await axios.post("/api/login", { email, password }, { withCredentials: true });
+      await fetchUser(); // fetch user after login
       return { success: true };
     } catch (err: any) {
       return { success: false, error: err.response?.data?.error || err.message };
@@ -62,11 +48,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       showLoader();
+      setLoading(true);
       await axios.post("/api/logout", {}, { withCredentials: true });
       setUser(null);
-      setToken(null);
-      sessionStorage.removeItem("authToken");
     } finally {
+      setLoading(false);
       hideLoader();
     }
   };
@@ -75,9 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-export function useAuth() {
+};
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
-}
+};
