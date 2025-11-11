@@ -17,13 +17,28 @@ export default function Login() {
         const newErrors = { email: "", password: "" };
         let isValid = true;
 
+        // Email validation
         if (!email.trim()) {
             newErrors.email = "Email is required";
             isValid = false;
+        } else {
+            // Check email format with regex
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                newErrors.email = "Please enter a valid email address";
+                isValid = false;
+            } else if (email.length > 254) {
+                newErrors.email = "Email is too long";
+                isValid = false;
+            }
         }
 
+        // Password validation
         if (!password.trim()) {
             newErrors.password = "Password is required";
+            isValid = false;
+        } else if (password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters";
             isValid = false;
         }
 

@@ -1,29 +1,36 @@
 [
   {
     "id": 1,
-    "name": "Lobby",
-    "type": "Common Area",
+    "name": "Zone A",
+    "type": "Office",
     "status": "active",
     "devices": 5
   },
   {
     "id": 2,
-    "name": "Conference Room",
-    "type": "Meeting Room",
+    "name": "Zone B",
+    "type": "Lab",
     "status": "inactive",
-    "devices": 8
-  },
-  {
-    "id": 3,
-    "name": "Office 1",
-    "type": "Office",
-    "status": "active",
     "devices": 3
   },
   {
+    "id": 3,
+    "name": "Zone C",
+    "type": "Lobby",
+    "status": "active",
+    "devices": 2
+  },
+  {
     "id": 4,
-    "name": "Server Room",
-    "type": "Technical",
+    "name": "Zone D",
+    "type": "Conference Room",
+    "status": "active",
+    "devices": 8
+  },
+  {
+    "id": 5,
+    "name": "Zone E",
+    "type": "Server Room",
     "status": "active",
     "devices": 12
   }

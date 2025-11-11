@@ -78,12 +78,12 @@ export default function Reports() {
         </button>
         <button
           onClick={handleExport}
-          className="px-4 py-2 bg-green-600 text-white rounded"
+          className="px-4 py-2 my-2 bg-green-600 text-white rounded"
         >
           Export Report + AI Summary
         </button>
         {insight && (
-          <div className="mt-4 p-4 bg-gray-100 rounded">
+          <div className="my-4 p-4 border-2 border-gray-100 rounded-md shadow-sm">
             <strong>AI Summary:</strong> {insight.response}{" "}
             <span className="text-sm text-gray-500">({insight.mode})</span>
           </div>

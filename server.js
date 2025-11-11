@@ -60,8 +60,32 @@ app.post("/api/ai-insight", async (req, res) => {
   const { prompt } = req.body;
   if (!prompt) return res.status(400).json({ error: "Missing prompt" });
 
-  const result = await generateAiInsights(prompt);
-  res.json(result);
+  try {
+    const result = await generateAiInsights(prompt);
+    res.json(result);
+  } catch (error) {
+    // Extract error details
+    const errorCode = error?.code || 'UNKNOWN';
+    const errorMessage = error?.message || 'An unexpected error occurred';
+    const statusCode = error?.statusCode || 500;
+    
+    // Map error codes to appropriate HTTP status codes
+    let httpStatus = statusCode;
+    if (errorCode === 'invalid_api_key' || errorCode === 401) {
+      httpStatus = 401;
+    } else if (errorCode === 'rate_limit_exceeded' || errorCode === 429) {
+      httpStatus = 429;
+    } else if (errorCode === 'insufficient_quota' || errorCode === 402) {
+      httpStatus = 402;
+    }
+    
+    // Return structured error response
+    res.status(httpStatus).json({
+      error: errorMessage,
+      code: errorCode,
+      timestamp: error?.timestamp || new Date().toISOString(),
+    });
+  }
 });
 
 const PORT = process.env.PORT || 4000;

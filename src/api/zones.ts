@@ -1,3 +1,5 @@
+import zonesData from "@/data/zones.json";
+
 export interface Zone {
   id: number;
   name: string;
@@ -6,11 +8,7 @@ export interface Zone {
   devices: number;
 }
 
-let zones: Zone[] = [
-  { id: 1, name: "Zone A", type: "Office", status: "active", devices: 5 },
-  { id: 2, name: "Zone B", type: "Lab", status: "inactive", devices: 3 },
-  { id: 3, name: "Zone C", type: "Lobby", status: "active", devices: 2 },
-];
+let zones: Zone[] = [...zonesData] as Zone[];
 
 export async function fetchZones(): Promise<Zone[]> {
   return new Promise((resolve) => setTimeout(() => resolve(zones), 500));

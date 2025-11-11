@@ -18,6 +18,7 @@ export default function Zones() {
   const [type, setType] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
   const [devices, setDevices] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {showLoader, hideLoader} = useLoader();
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function Zones() {
   const toggleStatus = async (id: number) => {
     const zone = zones.find(z => z.id === id);
     if (!zone) return;
-    const updated = { status: zone.status === "active" ? "inactive" : "active" };
+    const updated = { status: (zone.status === "active" ? "inactive" : "active") as "active" | "inactive" };
     const result = await updateZone(id, updated);
     if (result) {
       setZones(prev => prev.map(z => z.id === id ? result : z));
@@ -88,14 +89,21 @@ export default function Zones() {
     if (success) setZones(prev => prev.filter(z => z.id !== id));
   };
   const handleSubmit = async () => {
-    if (editingZone) {
-      const updated = await updateZone(editingZone.id, { name, type, status, devices });
-      if (updated) setZones(prev => prev.map(z => z.id === updated.id ? updated : z));
-    } else {
-      const newZone = await addZone({ name, type, status, devices });
-      setZones(prev => [...prev, newZone]);
+    if (isSubmitting) return; // Prevent double submission
+    
+    try {
+      setIsSubmitting(true);
+      if (editingZone) {
+        const updated = await updateZone(editingZone.id, { name, type, status, devices });
+        if (updated) setZones(prev => prev.map(z => z.id === updated.id ? updated : z));
+      } else {
+        const newZone = await addZone({ name, type, status, devices });
+        setZones(prev => [...prev, newZone]);
+      }
+      setDialogOpen(false);
+    } finally {
+      setIsSubmitting(false);
     }
-    setDialogOpen(false);
   };
   return (
     <div className="p-6 space-y-6">
@@ -126,7 +134,11 @@ export default function Zones() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         title={editingZone ? "Edit Zone" : "Add Zone"}
-        footer={<Button onClick={handleSubmit}>{editingZone ? "Save Changes" : "Add Zone"}</Button>}
+        footer={
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : editingZone ? "Save Changes" : "Add Zone"}
+          </Button>
+        }
       >
         <div className="space-y-4">
           <Input placeholder="Zone Name" value={name} onChange={(e) => setName(e.target.value)} />
@@ -138,7 +150,16 @@ export default function Zones() {
               <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
-          <Input type="number" placeholder="Devices" value={devices} onChange={(e) => setDevices(Number(e.target.value))} />
+          <Input
+            type="number"
+            placeholder="Devices"
+            value={devices}
+            min="0"
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setDevices(value < 0 ? 0 : value);
+            }}
+          />
         </div>
       </AppDialog>
     </div>
