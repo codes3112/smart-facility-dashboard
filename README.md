@@ -1,133 +1,131 @@
-# 🏢 Smart Facility Dashboard
+## :compass: Smart Facility Dashboard (React + Express)
 
-An intelligent facility management dashboard that provides **real-time insights**, **AI-generated summaries**, and **energy usage analytics** for multiple zones. Built with **React (Vite)**, **Express**, and **OpenAI API**, it demonstrates full-stack integration and modern UI practices.
-
----
-
-## 🚀 Features
-
-- **AI-Powered Insights** — Real-time summaries powered by OpenAI GPT (with graceful fallback to mock mode).
-- **Dynamic Reports** — View zone-wise metrics like energy usage, temperature, and timestamps.
-- **Export to CSV** — One-click export that includes AI insights at the top of the report.
-- **Robust Backend** — Node.js + Express server exposing `/api/ai-insight`.
-- **Error & Loading Handling** — Cleanly handled network and AI API states.
-- **Environment-Aware Mocking** — Works seamlessly even without a valid API key.
-- **Authentication Flow** — Simple mock login using pre-configured credentials.
+An intelligent facility management dashboard that demonstrates a modern **React application with secure authentication**, persistent sessions, **AI-generated summaries** with clean and modular architecture. Built with **React (Vite)**, **Express**, and **OpenAI API**. It's designed to reflect production-grade patterns — focusing on scalability, maintainability, and good user experience.
 
 ---
 
-## 🔑 Demo Credentials
+### :rocket: Tech Stack
 
-To log in, use:
+| Layer         | Technology                                    |
+| ------------- | --------------------------------------------- |
+| **Frontend**  | React 19 + TypeScript                         |
+| **Routing**   | React Router DOM                              |
+| **State**     | Context API (AuthContext, LoaderContext)      |
+| **HTTP**      | Axios                                         |
+| **Styling**   | TailwindCSS + ShadCN UI                       |
+| **Backend**   | Node.js + Express                             |
+| **Auth**      | Cookie-based sessions (HTTP-only)             |
+| **AI**        | OpenAI API (gpt-4o-mini)                      |
+| **Utilities** | CSV export, dotenv, concurrently              |
 
+---
+
+### :jigsaw: Features
+
+:closed_lock_with_key: **Authentication with persistent sessions**
+- Uses secure HTTP-only cookies and a lightweight token system.
+- Session persists across browser tabs (like Gmail).
+
+:door: **Protected routes**
+- Access control via `PrivateRoute` component.
+- Redirects unauthenticated users to the login page.
+
+:last_quarter_moon: **Dynamic layout**
+- Smart conditional rendering of `Sidebar` and `Header` based on the route.
+
+:zap: **Error & Loading Handling** — Cleanly handled network and AI API states.
+
+:bricks: **Modular architecture**
+- Clearly separated contexts, components, and routes.
+- Mimics a real-world enterprise setup.
+
+:brain: **AI-Powered Insights**
+- Real-time summaries powered by OpenAI GPT (with graceful fallback to mock mode).
+- Dynamic reports with zone-wise metrics like energy usage, temperature, and timestamps.
+
+:page_facing_up: **Export to CSV**
+- One-click export that includes AI insights at the top of the report.
+
+---
+
+### :brain: Design Decisions
+
+**Session Management**
+- Authentication tokens are stored in **HTTP-only cookies** (server-side managed) for security. The app verifies sessions on page load to ensure consistency and persistence.
+
+**Context-Driven Architecture**
+- The app uses `AuthContext` for authentication state and `LoaderContext` for consistent UX feedback during async actions.
+
+**Separation of Concerns**
+- `PrivateRoute`, `AuthProvider`, and layout components keep responsibilities isolated and predictable.
+
+**User Experience**
+- The app mirrors a professional dashboard pattern — persistent sidebar, smooth login/logout transitions, and stateful navigation.
+
+---
+
+### :gear: Running the Project
+
+#### 1. Clone the repository
+```bash
+git clone https://github.com/codes3112/smart-facility-dashboard.git
+cd smart-facility-dashboard
 ```
-Email: admin@example.com 
-Password: password
+
+#### 2. Install dependencies
+```bash
+npm install
 ```
 
-*(Mock authentication — no external auth provider required.)*
+#### 3. Setup environment variables
 
----
-
-## 🧠 Architecture Overview
-
+Create a `.env` file in the project root:
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+PORT=4000
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Frontend (React + Vite)                 │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │  Dashboard   │  │   Reports    │  │   Settings   │     │
-│  └──────────────┘  └──────────────┘  └──────────────┘     │
-│           │                 │                 │             │
-│           └─────────────────┴─────────────────┘             │
-│                           │                                 │
-│                    AI Advisor Component                     │
-│                           │                                 │
-└───────────────────────────┼─────────────────────────────────┘
-                            │
-                    HTTP Request (POST)
-                            │
-┌───────────────────────────▼─────────────────────────────────┐
-│                  Backend (Express Server)                   │
-│                                                              │
-│  POST /api/ai-insight                                       │
-│           │                                                  │
-│           ├──► Check OPENAI_API_KEY                         │
-│           │                                                  │
-│           ├──► If valid: Call OpenAI API                    │
-│           │                                                  │
-│           └──► If invalid: Return mock insight              │
-│                                                              │
-└──────────────────────────────────────────────────────────────┘
+
+#### 4. Start the servers
+```bash
+npm run dev
+```
+
+This runs concurrently:
+- Frontend → http://localhost:5173
+- Backend → http://localhost:4000
+
+#### 5. Access the app
+
+Visit **[http://localhost:5173](http://localhost:5173)** in your browser.
+
+Use the following test credentials:
+```
+email: admin@example.com
+password: password
 ```
 
 ---
 
-## ⚙️ Environment Setup
+### :speech_balloon: Notes
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/<your-username>/smart-facility-dashboard.git
-   cd smart-facility-dashboard
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Setup environment variables**
-   
-   Create a `.env` file in the project root:
-   ```bash
-   OPENAI_API_KEY=your_openai_api_key_here
-   PORT=4000
-   ```
-
-4. **Run the project (both frontend + backend)**
-   ```bash
-   npm run dev
-   ```
-   
-   This runs concurrently:
-   - Frontend → http://localhost:5173
-   - Backend → http://localhost:4000
+This demo focuses on:
+- Component organization
+- Authentication flow
+- Secure session handling
+- Clean and maintainable code
+- AI integration with OpenAI API
+- Modern React patterns with TypeScript
 
 ---
 
-## 🧩 How It Works
-
-1. User logs in with mock credentials.
-2. Dashboard loads mock or live facility data.
-3. When "Generate AI Insight" is triggered:
-   - The frontend sends a prompt to `/api/ai-insight`.
-   - The backend calls OpenAI (or mock mode if no key).
-   - AI insight is returned and displayed on the dashboard.
-4. "Export Report" generates a CSV file with:
-   - AI insight summary at the top.
-   - Tabular data for each zone below.
-
----
-
-## 🧠 Tech Stack
-
-| Layer         | Technology                            |
-| ------------- | ------------------------------------- |
-| **Frontend**  | React (Vite) + ShadCN UI + TypeScript |
-| **Backend**   | Node.js + Express                     |
-| **AI**        | OpenAI API (gpt-4o-mini)              |
-| **Styling**   | Tailwind CSS                          |
-| **Utilities** | CSV export, dotenv, concurrently      |
-
----
-
-## 💡 AI Configuration Modes
+### 💡 AI Configuration Modes
 
 - **Live Mode:** Uses your actual OpenAI key.
 - **Mock Mode:** Returns realistic random insights if API key is missing or quota is exceeded.
 
 ---
 
-## 🛠️ Scripts
+### 🛠️ Scripts
 
 | Command          | Description                        |
 | ---------------- | ---------------------------------- |
@@ -137,7 +135,7 @@ Password: password
 
 ---
 
-## 📦 Deployment Notes
+### 📦 Deployment Notes
 
 - Ensure `.env` is **not** committed.
 - Use `process.env.OPENAI_API_KEY` on the backend only.
@@ -145,22 +143,8 @@ Password: password
 
 ---
 
-## 🧾 Example Output (AI Insight)
-
-```
-AI Summary:
-"Zone 1 energy consumption increased slightly due to peak HVAC demand."
-
-Zone, Energy Usage, Temperature, Timestamp
-Zone A, 240 kWh, 22°C, 2025-11-06T08:00:00Z
-Zone B, 310 kWh, 24°C, 2025-11-06T09:00:00Z
-Zone C, 180 kWh, 21°C, 2025-11-06T09:30:00Z
-```
-
----
-
-## 👨‍💻 Author
+### 👨‍💻 Author
 
 **Sneha Arora**  
-Senior Frontend Developer | Full-Stack Enthusiast  
-Exploring how GenAI can power smarter dashboards and analytics.
+Senior Frontend Developer | React + TypeScript + Angular  
+Passionate about building maintainable, user-friendly applications. Exploring how GenAI can power smarter dashboards and analytics.
