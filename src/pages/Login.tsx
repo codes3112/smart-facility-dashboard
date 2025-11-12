@@ -5,10 +5,13 @@ import AppCard from "@/components/AppCard";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+
 export default function Login() {
     const { user, login, loading } = useAuth()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [errors, setErrors] = useState({ email: "", password: "" });
     const { toast } = useToast();
     const navigate = useNavigate();
@@ -100,16 +103,30 @@ export default function Login() {
                             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                                 Password
                             </label>
-                            <Input
-                                type="password"
-                                value={password}
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                    if (errors.password) setErrors({ ...errors, password: "" });
-                                }}
-                                placeholder="Enter your password"
-                                className={`w-full ${errors.password ? "border-red-500" : ""}`}
-                            />
+                            <div className="relative">
+                                <Input
+                                    type={isPasswordVisible ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        if (errors.password) setErrors({ ...errors, password: "" });
+                                    }}
+                                    placeholder="Enter your password"
+                                    className={`w-full pr-10 ${errors.password ? "border-red-500" : ""}`}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+                                    aria-label={isPasswordVisible ? "Hide password" : "Show password"}
+                                >
+                                    {isPasswordVisible ? (
+                                        <EyeOff className="h-4 w-4" />
+                                    ) : (
+                                        <Eye className="h-4 w-4" />
+                                    )}
+                                </button>
+                            </div>
                             {errors.password && (
                                 <p className="text-red-500 text-sm mt-1">{errors.password}</p>
                             )}
